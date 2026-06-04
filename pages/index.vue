@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-left">
@@ -14,17 +13,16 @@
                     <div class="logo-icon">
                         <i class="fas fa-building"></i>
                     </div>
-                    <span class="logo-text">LOGO</span>
+                    <span class="logo-text">SmartMBG</span>
                 </div>
             </div>
             <div class="nav-right">
-                <a href="#" class="btn-login">Masuk</a>
-                <a href="#" class="btn-primary">Mulai Gratis</a>
+                <a href="#" class="btn-login" @click.prevent="isLoginModalOpen = true">Masuk</a>
+                <a href="#" class="btn-primary" @click.prevent="isLoginModalOpen = true">Mulai Gratis</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-container">
             <div class="hero-content">
@@ -41,7 +39,7 @@
                     Platform web builder tercanggih yang mengubah ide anda menjadi website profesional dalam 30 detik, tanpa coding, siap pakai, dan otomatis dioptimalkan.
                 </p>
                 <div class="hero-buttons">
-                    <a href="#" class="btn-main">Mulai Coba Gratis</a>
+                    <a href="#" class="btn-main" @click.prevent="isLoginModalOpen = true">Mulai Coba Gratis</a>
                     <a href="#" class="btn-outline">
                         <i class="fas fa-play-circle"></i>
                         Lihat Demo
@@ -79,7 +77,6 @@
         </div>
     </section>
 
-    <!-- Partners Section -->
     <section class="partners">
         <div class="partners-container">
             <div class="partners-label">
@@ -123,7 +120,6 @@
         </div>
     </section>
 
-    <!-- Features Section -->
     <section class="features">
         <div class="features-container">
             <div class="section-header">
@@ -187,7 +183,6 @@
         </div>
     </section>
 
-    <!-- Testimonials Section -->
     <section class="testimonials">
         <div class="testimonials-container">
             <div class="section-header">
@@ -272,7 +267,6 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section class="cta">
         <div class="cta-container">
             <span class="label-tag">COBA SEKARANG</span>
@@ -291,7 +285,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-grid">
@@ -300,7 +293,7 @@
                         <div class="logo-icon">
                             <i class="fas fa-building"></i>
                         </div>
-                        <span class="logo-text">LOGO</span>
+                        <span class="logo-text">SmartMBG</span>
                     </div>
                     <p>Platform web builder tercanggih untuk UMKM Indonesia.</p>
                 </div>
@@ -328,28 +321,59 @@
             </div>
         </div>
     </footer>
+
+    <div v-if="isLoginModalOpen" class="modal-overlay active" @click.self="isLoginModalOpen = false">
+      <div class="modal modal-sm" style="background: white; padding: 30px; border-radius: 16px; position: relative;">
+        <button @click="isLoginModalOpen = false" style="position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #555;">&times;</button>
+        
+        <h3 style="margin-bottom: 20px; text-align: center; font-weight: 800; color: #1b4332;">Login ke Sistem</h3>
+        
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label style="font-size: 12px; font-weight: 700; color: #52796f; margin-bottom: 8px; display: block;">PILIH ROLE AKSES</label>
+          <select v-model="selectedRole" style="width: 100%; padding: 14px; border-radius: 8px; border: 2px solid #b7e4c7; font-size: 14px; font-weight: 600; outline: none;">
+            <option value="superadmin">Admin Suki SUPER (Superadmin)</option>
+            <option value="employee">Karyawan / Employee</option>
+          </select>
+        </div>
+
+        <button @click="executeLogin" style="width: 100%; padding: 14px; border-radius: 8px; border: none; background: #2d6a4f; color: white; font-weight: 700; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <i class="fas fa-sign-in-alt"></i> Masuk Sekarang
+        </button>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
+/* =========================================================
+   1. LOGIKA LOGIN NUXT 3 (MODAL & PROTEKSI ROLE)
+========================================================= */
+const isLoginModalOpen = ref(false)
+const selectedRole = ref('superadmin')
+
+// Ambil state global untuk role dan halaman aktif dari Nuxt
+const userRole = useCookie('userRole', { default: () => null }) // UBAH BARIS INI
+const adminPage = useState('adminPage')
+
+const executeLogin = () => {
+  userRole.value = selectedRole.value // Isi role sesuai dropdown
+  adminPage.value = 'dashboard'       // Set halaman default panel
+  isLoginModalOpen.value = false      // Tutup form modal
+  navigateTo('/admin')                // Langsung lempar ke admin panel
+}
+
+/* =========================================================
+   2. LOGIKA ANIMASI & SCROLL (VANILLA JS BAWAAN TEMPLATE)
+========================================================= */
 onMounted(() => {
-    /* ============================================
-       AKSELERASI BISNIS LANDING PAGE - VANILLA JS
-       ============================================ */
-    
-    // Semua manipulasi DOM aman di sini karena PASTI dieksekusi di sisi client/browser!
-
-    // ==========================================
     // NAVBAR SCROLL EFFECT
-    // ==========================================
     const navbar = document.querySelector('.navbar');
     let lastScroll = 0;
-
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
-
         if (navbar) {
             if (currentScroll > 50) {
                 navbar.style.boxShadow = '0 4px 20px rgba(27, 67, 50, 0.08)';
@@ -360,25 +384,21 @@ onMounted(() => {
         lastScroll = currentScroll;
     });
 
-    // ==========================================
     // FEATURES CAROUSEL
-    // ==========================================
     const featureCards = document.querySelectorAll('.feature-card');
     const featureDots = document.querySelectorAll('.features .dot');
     const arrowPrev = document.querySelector('.arrow-prev');
     const arrowNext = document.querySelector('.arrow-next');
-    let currentFeature = 1; // Center card is active by default
+    let currentFeature = 1;
 
     function updateFeatureCarousel(index) {
         featureCards.forEach((card, i) => {
             card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-
             if (i === index) {
                 card.style.transform = 'translateY(-10px) scale(1)';
                 card.style.opacity = '1';
                 card.style.zIndex = '3';
                 card.style.boxShadow = '0 12px 40px rgba(27, 67, 50, 0.15)';
-
                 const icon = card.querySelector('.card-icon');
                 if (icon) {
                     icon.classList.remove('gray');
@@ -389,7 +409,6 @@ onMounted(() => {
                 card.style.opacity = '0.85';
                 card.style.zIndex = '1';
                 card.style.boxShadow = '0 4px 24px rgba(27, 67, 50, 0.08)';
-
                 const icon = card.querySelector('.card-icon');
                 if (icon) {
                     icon.classList.remove('green');
@@ -400,7 +419,6 @@ onMounted(() => {
                 card.style.opacity = '0.85';
                 card.style.zIndex = '1';
                 card.style.boxShadow = '0 4px 24px rgba(27, 67, 50, 0.08)';
-
                 const icon = card.querySelector('.card-icon');
                 if (icon) {
                     icon.classList.remove('green');
@@ -408,7 +426,6 @@ onMounted(() => {
                 }
             }
         });
-
         featureDots.forEach((dot, i) => {
             dot.classList.toggle('active', i === index);
         });
@@ -420,14 +437,12 @@ onMounted(() => {
             updateFeatureCarousel(currentFeature);
         });
     }
-
     if (arrowNext) {
         arrowNext.addEventListener('click', () => {
             currentFeature = (currentFeature + 1) % featureCards.length;
             updateFeatureCarousel(currentFeature);
         });
     }
-
     featureDots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
             currentFeature = index;
@@ -435,31 +450,11 @@ onMounted(() => {
         });
     });
 
-    // ==========================================
     // TESTIMONIALS SLIDER
-    // ==========================================
     const testimonialData = [
-        {
-            name: 'Siti Aminah',
-            role: 'Ibu Rumah Tangga',
-            avatar: 'https://i.pravatar.cc/150?img=5',
-            quote: '"Menghemat biaya sewa web developer puluhan juta. Sangat disarankan untuk UMKM yang baru merintis!"',
-            stars: 5
-        },
-        {
-            name: 'Budi Santoso',
-            role: 'Pemilik Warung Kopi',
-            avatar: 'https://i.pravatar.cc/150?img=11',
-            quote: '"Website saya jadi lebih profesional dan pelanggan meningkat 3x lipat dalam sebulan. Luar biasa!"',
-            stars: 5
-        },
-        {
-            name: 'Dewi Lestari',
-            role: 'Pengusaha Batik',
-            avatar: 'https://i.pravatar.cc/150?img=9',
-            quote: '"Tidak perlu coding sama sekali, AI langsung buatkan website yang cantik dan responsif."',
-            stars: 5
-        }
+        { name: 'Siti Aminah', role: 'Ibu Rumah Tangga', avatar: 'https://i.pravatar.cc/150?img=5', quote: '"Menghemat biaya sewa web developer puluhan juta. Sangat disarankan untuk UMKM yang baru merintis!"', stars: 5 },
+        { name: 'Budi Santoso', role: 'Pemilik Warung Kopi', avatar: 'https://i.pravatar.cc/150?img=11', quote: '"Website saya jadi lebih profesional dan pelanggan meningkat 3x lipat dalam sebulan. Luar biasa!"', stars: 5 },
+        { name: 'Dewi Lestari', role: 'Pengusaha Batik', avatar: 'https://i.pravatar.cc/150?img=9', quote: '"Tidak perlu coding sama sekali, AI langsung buatkan website yang cantik dan responsif."', stars: 5 }
     ];
 
     const testimonialCard = document.querySelector('.testimonial-card');
@@ -509,29 +504,24 @@ onMounted(() => {
             updateTestimonial(currentTestimonial);
         });
     }
-
     if (navNext) {
         navNext.addEventListener('click', () => {
             currentTestimonial = (currentTestimonial + 1) % testimonialData.length;
             updateTestimonial(currentTestimonial);
         });
     }
-
     navDots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
             currentTestimonial = index;
             updateTestimonial(currentTestimonial);
         });
     });
-
     setInterval(() => {
         currentTestimonial = (currentTestimonial + 1) % testimonialData.length;
         updateTestimonial(currentTestimonial);
     }, 6000);
 
-    // ==========================================
     // CTA GENERATE BUTTON
-    // ==========================================
     const generateBtn = document.querySelector('.btn-generate');
     const ctaInput = document.querySelector('.cta-input-group input');
 
@@ -540,12 +530,10 @@ onMounted(() => {
             const value = ctaInput.value.trim();
             if (value) {
                 generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-
                 setTimeout(() => {
                     generateBtn.innerHTML = '<i class="fas fa-check"></i> Generated!';
                     generateBtn.style.background = '#2d6a4f';
                     generateBtn.style.color = '#fff';
-
                     setTimeout(() => {
                         generateBtn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Generate';
                         generateBtn.style.background = '';
@@ -555,45 +543,30 @@ onMounted(() => {
             } else {
                 ctaInput.style.borderColor = '#ef4444';
                 ctaInput.placeholder = 'Please describe your idea first...';
-
                 setTimeout(() => {
                     ctaInput.style.borderColor = '';
                     ctaInput.placeholder = 'Buatkan saya web dimsum mental...';
                 }, 2000);
             }
         });
-
         ctaInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                generateBtn.click();
-            }
+            if (e.key === 'Enter') generateBtn.click();
         });
     }
 
-    // ==========================================
     // SMOOTH SCROLL FOR NAV LINKS
-    // ==========================================
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         });
     });
 
-    // ==========================================
     // INTERSECTION OBSERVER FOR ANIMATIONS
-    // ==========================================
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
+    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -610,9 +583,7 @@ onMounted(() => {
         observer.observe(el);
     });
 
-    // ==========================================
     // MAP PINS ANIMATION
-    // ==========================================
     const mapPins = document.querySelectorAll('.map-pin');
     mapPins.forEach((pin, index) => {
         pin.style.animation = `bounce 2s ease-in-out ${index * 0.3}s infinite`;
@@ -626,10 +597,38 @@ onMounted(() => {
         }
     `;
     document.head.appendChild(styleSheet);
-});
+})
 </script>
 
 <style>
-/* Perintah sakti untuk menarik CSS yang satu folder dengannya */
-@import "./styles.css";
+@import "~/assets/css/styles.css";
+
+/* CSS Khusus Modal Login Supaya Mengambang dan Rapi */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 </style>

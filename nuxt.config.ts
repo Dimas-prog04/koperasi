@@ -1,5 +1,13 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
+  // 1. Paksa Nuxt untuk mengaktifkan sistem routing folder pages
+  pages: true,
+
+  // 2. Hilangkan warning rekomendasi tanggal di terminal kamu
+  compatibilityDate: '2026-06-04',
+
+  devtools: { enabled: true },
+
   app: {
     head: {
       htmlAttrs: { lang: 'id' },
@@ -10,7 +18,6 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css' }
       ],
       script: [
-        // Ubah body: true menjadi tagPosition: 'bodyClose'
         { src: '/script.js', tagPosition: 'bodyClose' } 
       ],
       base: { target: '_blank' }

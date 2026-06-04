@@ -10,10 +10,7 @@
             </div>
             <div class="nav-center">
                 <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-building"></i>
-                    </div>
-                    <span class="logo-text">SmartMBG</span>
+                    <img src="/helpin-logo.svg" alt="Helpin Logo" style="height: 50px; width: auto;">
                 </div>
             </div>
             <div class="nav-right">
@@ -290,10 +287,7 @@
             <div class="footer-grid">
                 <div class="footer-brand">
                     <div class="logo">
-                        <div class="logo-icon">
-                            <i class="fas fa-building"></i>
-                        </div>
-                        <span class="logo-text">SmartMBG</span>
+                        <img src="/helpin-logo.svg" alt="Helpin Logo" style="height: 50px; width: auto;">
                     </div>
                     <p>Platform web builder tercanggih untuk UMKM Indonesia.</p>
                 </div>
@@ -317,7 +311,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 SmartMBG. All rights reserved.</p>
+                <p>&copy; 2026 Helpin. All rights reserved.</p>
             </div>
         </div>
     </footer>

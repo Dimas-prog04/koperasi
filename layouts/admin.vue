@@ -3,7 +3,7 @@
     <aside class="sidebar" :class="{ open: isSidebarOpen }">
       <div class="sidebar-header">
         <div class="logo">
-          SmartMBG <span>v1.0</span>
+          <img src="/helpin-logo.svg" alt="Helpin Logo" style="height: 50px; width: auto;">
         </div>
         <div class="user-block">
           <div class="user-label">Sistem Aktif</div>

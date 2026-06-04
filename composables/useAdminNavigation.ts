@@ -2,11 +2,11 @@
 import { ref, onMounted, watch } from 'vue'
 
 export const useAdminNavigation = () => {
-  // State Utama Navigasi & Autentikasi
+  // State Utama Navigasi
   const adminPage = useState<string>('adminPage', () => 'dashboard')
   
-  // 🔥 PERUBAHAN DI SINI: Gunakan useCookie agar sesi login tidak hilang saat refresh
-  const userRole = useCookie<string | null>('userRole', { default: () => null })
+  // 🔥 JURUS PAMUNGKAS: Pakai <any> agar TypeScript berhenti komplain soal tipe data!
+  const userRole = useCookie<any>('userRole', { default: () => null })
   
   // State UI (Sidebar, Submenu, Modals)
   const isSidebarOpen = useState<boolean>('isSidebarOpen', () => false)
@@ -37,7 +37,7 @@ export const useAdminNavigation = () => {
     })
   }
 
-  // Fungsi Navigasi Halaman (Menggantikan fungsi navigate lama)
+  // Fungsi Navigasi Halaman
   const changePage = (pageName: string) => {
     adminPage.value = pageName
     isSidebarOpen.value = false // Tutup sidebar otomatis di mobile
@@ -65,26 +65,31 @@ export const useAdminNavigation = () => {
     isSidebarOpen.value = !isSidebarOpen.value
   }
 
-  // Logika Render Chart (Dipindahkan dari DOM manual ke reaktivitas Vue)
-  const chartData = [50, 65, 70, 80, 60, 75, 65, 75, 65, 55, 75, 65]
-  const chartLabels = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agst','Sep','Okt','Nov','Des']
+  // Deklarasi Chart Data secara eksplisit DENGAN tipe data (number[] dan string[])
+  const chartData: number[] = [50, 65, 70, 80, 60, 75, 65, 75, 65, 55, 75, 65]
+  const chartLabels: string[] = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agst','Sep','Okt','Nov','Des']
 
   const renderChart = () => {
-    // Karena kita memakai v-if, tunggu tick DOM selesai sebelum mengakses canvas/elemen chart
+    // Mencegah kode DOM dieksekusi di Server-side
+    if (!process.client) return; 
+
+    // Tunggu tick DOM selesai sebelum mengakses elemen
     setTimeout(() => {
       const container = document.getElementById('chartBars')
       if (!container) return
       container.innerHTML = ''
       
-      chartData.forEach((val, i) => {
+      chartData.forEach((val: number, i: number) => {
         const wrapper = document.createElement('div')
         wrapper.className = 'bar-wrapper'
+        
         const bar = document.createElement('div')
         bar.className = 'bar'
         bar.style.height = '0%'
+        
         const label = document.createElement('div')
         label.className = 'bar-label'
-        label.textContent = chartLabels[i]
+        label.textContent = chartLabels[i] || ''
         
         wrapper.appendChild(bar)
         wrapper.appendChild(label)

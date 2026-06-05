@@ -77,7 +77,12 @@
 .sidebar-nav {
   flex: 1;
   padding: 16px 12px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+
+.sidebar-nav::-webkit-scrollbar { display: none; }
 
 .nav-item {
   display: flex;
@@ -279,13 +284,38 @@
    CHART
    ======================================== */
 
+.chart-wrapper {
+  display: flex;
+  gap: 16px;
+  position: relative;
+}
+
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 60px;
+  height: 280px;
+  padding-right: 8px;
+  border-right: 2px solid #e8ece8;
+}
+
+.y-label {
+  font-size: 11px;
+  color: #8a9a8a;
+  font-weight: 500;
+  line-height: 1;
+}
+
 .chart-container {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  height: 200px;
-  padding: 0 10px;
-  gap: 8px;
+  height: 280px;
+  flex: 1;
+  gap: 6px;
+  padding: 0;
 }
 
 .chart-bar-wrapper {
@@ -293,21 +323,37 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  height: 100%;
 }
 
 .chart-bar {
   width: 100%;
-  max-width: 40px;
-  background: #1a3c2a;
-  border-radius: 6px 6px 0 0;
+  max-width: 32px;
+  background: linear-gradient(180deg, #1a3c2a 0%, #2d6a4f 100%);
+  border-radius: 4px 4px 0 0;
   transition: all 0.3s;
+  min-height: 2px;
+}
+
+.chart-bar:hover {
+  background: linear-gradient(180deg, #113620 0%, #1a4d35 100%);
+  box-shadow: 0 4px 8px rgba(26, 60, 42, 0.15);
 }
 
 .chart-label {
   font-size: 11px;
   color: #8a9a8a;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: auto;
+}
+
+.chart-value {
+  font-size: 10px;
+  color: #1a3c2a;
+  font-weight: 700;
+  margin-top: 2px;
 }
 
 /* ========================================

@@ -817,7 +817,11 @@ watch(categoryDropdownOpen, (val) => {
   padding: 24px;
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+
+.sp-sidebar__inner::-webkit-scrollbar { display: none; }
 
 /* Logo */
 .sp-logo {

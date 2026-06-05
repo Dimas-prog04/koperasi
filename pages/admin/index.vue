@@ -980,7 +980,8 @@ const aktifitasData = [
 .hp-sidebar--closed { transform: translateX(-100%); }
 .hp-sidebar--open { transform: translateX(0); }
 @media (min-width: 1024px) { .hp-sidebar { transform: translateX(0) !important; } }
-.hp-sidebar__top { padding-top: 32px; overflow-y: auto; }
+.hp-sidebar__top { padding-top: 32px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.hp-sidebar__top::-webkit-scrollbar { display: none; }
 .hp-logo { text-align: center; margin-bottom: 32px; color: #fff; }
 .hp-logo__text { font-size: 36px; font-weight: 800; letter-spacing: 2px; margin: 0; line-height: 1; }
 .hp-logo__text span { position: relative; }
@@ -1091,7 +1092,8 @@ const aktifitasData = [
 
 /* Chart Area */
 .hp-chart { display: flex; height: 250px; position: relative; padding-left: 50px; }
-.hp-chart__y-axis { position: absolute; left: 0; top: 0; bottom: 30px; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #9ca3af; text-align: right; width: 40px; }
+.hp-chart__y-axis { position: absolute; left: 0; top: 0; bottom: 30px; display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #9ca3af; text-align: right; width: 60px; }
+.hp-chart__y-axis span { display: inline-block; white-space: nowrap; }
 .hp-chart__bars { flex: 1; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; gap: 10px; }
 .hp-chart__bar-wrap { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
 .hp-chart__bar { width: 60%; background: #19462D; border-radius: 4px 4px 0 0; }
@@ -1183,6 +1185,39 @@ const aktifitasData = [
 .hp-btn-outline { background: transparent; border: 1px solid #19462D; color: #19462D; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; }
 .hp-btn-outline:hover { background: #f9fafb; }
 .hp-mt-6 { margin-top: 24px; }
+
+.hp-btn-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
+}
+.hp-btn-action {
+  flex: 1;
+  padding: 14px 0;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.hp-btn-action:hover {
+  transform: translateY(-1px);
+}
+.hp-btn-action--blue {
+  background: #0ea5e9;
+}
+.hp-btn-action--blue:hover {
+  background: #0284c7;
+}
+.hp-btn-action--red {
+  background: #ef4444;
+}
+.hp-btn-action--red:hover {
+  background: #dc2626;
+}
 
 .hp-product-img-large { width: 100%; max-width: 350px; height: auto; margin: 0 auto; display: block; object-fit: contain; }
 

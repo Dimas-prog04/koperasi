@@ -31,10 +31,20 @@
         <h2><span class="bullet">•</span> Grafik Omset</h2>
         <select class="select-sm"><option>Bulanan</option></select>
       </div>
-      <div class="chart-container">
-        <div v-for="(b, i) in chartData" :key="i" class="chart-bar-wrapper">
-          <div class="chart-bar" :style="{ height: b.value + 'px' }"></div>
-          <span class="chart-label">{{ b.label }}</span>
+      <div class="chart-wrapper">
+        <div class="chart-y-axis">
+          <div class="y-label">Rp 900</div>
+          <div class="y-label">Rp 700</div>
+          <div class="y-label">Rp 500</div>
+          <div class="y-label">Rp 300</div>
+          <div class="y-label">Rp 100</div>
+        </div>
+        <div class="chart-container">
+          <div v-for="(b, i) in chartData" :key="i" class="chart-bar-wrapper">
+            <div class="chart-bar" :style="{ height: b.value + '%' }"></div>
+            <span class="chart-label">{{ b.label }}</span>
+            <span class="chart-value">{{ b.displayValue }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -109,10 +119,18 @@
 import { ref } from 'vue'
 
 const chartData = [
-  { label: 'Jan', value: 80 }, { label: 'Feb', value: 120 }, { label: 'Mar', value: 130 },
-  { label: 'Apr', value: 150 }, { label: 'Mei', value: 110 }, { label: 'Jun', value: 140 },
-  { label: 'Jul', value: 120 }, { label: 'Agst', value: 145 }, { label: 'Sep', value: 120 },
-  { label: 'Okt', value: 90 }, { label: 'Nov', value: 140 }, { label: 'Des', value: 120 }
+  { label: 'Jan', value: 45, displayValue: 'Rp 405k' },
+  { label: 'Feb', value: 70, displayValue: 'Rp 630k' },
+  { label: 'Mar', value: 78, displayValue: 'Rp 702k' },
+  { label: 'Apr', value: 85, displayValue: 'Rp 765k' },
+  { label: 'Mei', value: 65, displayValue: 'Rp 585k' },
+  { label: 'Jun', value: 80, displayValue: 'Rp 720k' },
+  { label: 'Jul', value: 70, displayValue: 'Rp 630k' },
+  { label: 'Agst', value: 88, displayValue: 'Rp 792k' },
+  { label: 'Sep', value: 72, displayValue: 'Rp 648k' },
+  { label: 'Okt', value: 50, displayValue: 'Rp 450k' },
+  { label: 'Nov', value: 82, displayValue: 'Rp 738k' },
+  { label: 'Des', value: 75, displayValue: 'Rp 675k' }
 ]
 
 const monitoringData = ref([

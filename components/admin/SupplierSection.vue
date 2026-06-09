@@ -1,30 +1,33 @@
-<!-- components/admin/SupplierSection.vue -->
 <template>
-  <section class="page-section active" id="page-supplier">
-    <div class="content-card">
-      <div class="card-header">
-        <h3 class="card-title"><span class="bullet"></span> Supplier</h3>
-        <button class="btn-add"><i class="fas fa-plus"></i></button>
+  <div class="hp-view animate-fade">
+    <div class="hp-card">
+      <div class="hp-card__header">
+        <h3 class="hp-card__title"><span class="hp-dot hp-dot--dark"></span> Supplier</h3>
+        <button @click="$emit('open-supplier-modal')" class="hp-btn-add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
       </div>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>NAMA SUPPLIER</th><th>KONTAK/TELEPON</th><th>KOMODITAS</th><th>ALAMAT WILAYAH</th><th>AKSI</th>
-            </tr>
-          </thead>
+      <div class="hp-table-wrap">
+        <table class="hp-table">
+          <thead><tr><th>NAMA SUPPLIER</th><th>KONTAK/TELEPON</th><th>KOMODITAS</th><th>ALAMAT WILAYAH</th><th>AKSI</th></tr></thead>
           <tbody>
-            <tr v-for="i in 5" :key="i">
-              <td>Gudang Jaya</td><td class="text-bold">0895-2345-6789</td>
-              <td><span class="badge-komoditas">Sembako</span></td><td>Samarinda Seberang</td>
+            <tr v-for="(item, i) in supplierData" :key="i">
+              <td><strong>{{ item.nama }}</strong></td>
+              <td><strong>{{ item.kontak }}</strong></td>
+              <td><span class="hp-badge hp-badge--blue-light">{{ item.komoditas }}</span></td>
+              <td><strong>{{ item.alamat }}</strong></td>
               <td>
-                <button class="action-btn edit"><i class="fas fa-pen"></i></button>
-                <button class="action-btn delete"><i class="fas fa-trash"></i></button>
+                <div class="hp-actions">
+                  <button @click="$emit('open-edit')" class="hp-btn-icon hp-btn-icon--yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                  <button @click="$emit('open-delete')" class="hp-btn-icon hp-btn-icon--red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-  </section>
+  </div>
 </template>
+<script setup>
+defineProps({ supplierData: Array })
+defineEmits(['open-supplier-modal', 'open-edit', 'open-delete'])
+</script>

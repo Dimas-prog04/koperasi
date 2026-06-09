@@ -1,0 +1,489 @@
+﻿1: <template>
+2:   <div class="hp-wrapper">
+3:     <div v-if="mobileMenuOpen" class="hp-overlay" @click="mobileMenuOpen = false"></div>
+4: 
+5:     <aside :class="['hp-sidebar', mobileMenuOpen ? 'hp-sidebar--open' : 'hp-sidebar--closed']">
+6:       <div class="hp-sidebar__top">
+7:         <div class="hp-logo">
+8:           <h1 class="hp-logo__text">H<span>E</span>LPIN</h1>
+9:           <span class="hp-logo__sub">SERVICES</span>
+10:         </div>
+11: 
+12:         <div class="hp-user-info">
+13:           <p class="hp-user-info__label"><span class="hp-dot"></span> PENGGUNA AKTIF</p>
+14:           <h2 class="hp-user-info__name">Admin Suki SUPER</h2>
+15:           <span class="hp-user-info__badge">ADMIN</span>
+16:         </div>
+17: 
+18:         <nav class="hp-nav">
+19:           <template v-for="menu in menus" :key="menu.id">
+20:             <button 
+21:               v-if="!menu.sub"
+22:               @click="changeView(menu.id)" 
+23:               :class="['hp-nav__btn', currentView === menu.id ? 'hp-nav__btn--active' : '']"
+24:             >
+25:               <div class="hp-nav__btn-curve-top"></div>
+26:               <div class="hp-nav__btn-inner">
+27:                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" v-html="menu.icon"></svg>
+28:                 <span>{{ menu.label }}</span>
+29:               </div>
+30:               <div class="hp-nav__btn-curve-bottom"></div>
+31:             </button>
+32: 
+33:             <div v-else class="hp-nav-group">
+34:               <button @click="isAkunOpen = !isAkunOpen" class="hp-nav__btn hp-nav__btn--parent">
+35:                 <div class="hp-nav__btn-inner" style="border-radius: 0;">
+36:                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" v-html="menu.icon"></svg>
+37:                   <span>{{ menu.label }}</span>
+38:                   <svg :class="['hp-nav-arrow', isAkunOpen ? 'hp-nav-arrow--open' : '']" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+39:                 </div>
+40:               </button>
+41:               
+42:               <div v-show="isAkunOpen" class="hp-nav-sub">
+43:                 <button 
+44:                   v-for="sub in menu.sub" :key="sub.id"
+45:                   @click="changeView(sub.id)" 
+46:                   :class="['hp-nav__btn hp-nav__btn--sub', currentView === sub.id ? 'hp-nav__btn--active' : '']"
+47:                 >
+48:                   <div class="hp-nav__btn-curve-top"></div>
+49:                   <div class="hp-nav__btn-inner">
+50:                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" v-html="sub.icon"></svg>
+51:                     <span>{{ sub.label }}</span>
+52:                   </div>
+53:                   <div class="hp-nav__btn-curve-bottom"></div>
+54:                 </button>
+55:               </div>
+56:             </div>
+57:           </template>
+58:         </nav>
+59:       </div>
+60: 
+61:       <div class="hp-sidebar__bottom">
+62:         <div class="hp-auth-info">
+63:           <p class="hp-auth-info__label"><span class="hp-dot"></span> LOGGED IN AS</p>
+64:           <h3 class="hp-auth-info__name">Admin Suki SUPER</h3>
+65:         </div>
+66:         <button class="hp-logout-btn">
+67:           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+68:             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>
+69:           </svg>
+70:         </button>
+71:       </div>
+72:     </aside>
+73: 
+74:     <main class="hp-main">
+75:       <header class="hp-header">
+76:         <button @click="mobileMenuOpen = true" class="hp-mobile-menu-btn">
+77:           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+78:         </button>
+79:         <div class="hp-header__title-area">
+80:           <h1 class="hp-header__title">{{ currentMenuLabel }}</h1>
+81:           <p class="hp-header__subtitle">Dashboard dari sistem</p>
+82:         </div>
+83:         <div class="hp-header__status">
+84:           <span class="hp-dot hp-dot--blue"></span>
+85:           STATUS<br><strong style="color: #1E3A8A;">ONLINE</strong>
+86:         </div>
+87:       </header>
+88: 
+89:       <div class="hp-content">
+90:         <AdminDashboardSection 
+91:           v-if="currentView === 'dashboard'" 
+92:           :chartData="chartData" 
+93:           :monitoringData="monitoringData" 
+94:           @open-product-detail="openProductDetail" 
+95:         />
+96:         <AdminKaryawanSection 
+97:           v-else-if="currentView === 'karyawan'" 
+98:           :karyawanData="karyawanData" 
+99:           @open-karyawan-modal="showKaryawanModal = true" 
+100:           @open-edit="openEdit" 
+101:           @open-delete="openDelete" 
+102:         />
+103:         <AdminPenggunaSection 
+104:           v-else-if="currentView === 'pengguna'" 
+105:           :penggunaData="penggunaData" 
+106:           @open-pengguna-modal="showPenggunaModal = true" 
+107:         />
+108:         <AdminSupplierSection 
+109:           v-else-if="currentView === 'supplier'" 
+110:           :supplierData="supplierData" 
+111:           @open-supplier-modal="showSupplierModal = true" 
+112:           @open-edit="openEdit" 
+113:           @open-delete="openDelete" 
+114:         />
+115:         <AdminProdukSection 
+116:           v-else-if="currentView === 'produk'" 
+117:           :monitoringData="monitoringData" 
+118:           @open-produk-modal="showProdukModal = true" 
+119:           @open-product-detail="openProductDetail" 
+120:         />
+121:         <AdminKasirSection 
+122:           v-else-if="currentView === 'kasir'" 
+123:         />
+124:         <AdminTransaksiSection 
+125:           v-else-if="currentView === 'transaksi'" 
+126:           :transaksiData="transaksiData" 
+127:         />
+128:         <AdminKasSection 
+129:           v-else-if="currentView === 'kas'" 
+130:           :kasData="kasData" 
+131:         />
+132:         <AdminAktifitasSection 
+133:           v-else-if="currentView === 'aktifitas'" 
+134:           :aktifitasData="aktifitasData" 
+135:           @open-aktifitas-modal="showAktifitasModal = true" 
+136:         />
+137:         <AdminCustomEcomerceSection 
+138:           v-else-if="currentView === 'custom-ecomerce'" 
+139:           @open-product-detail="openProductDetail" 
+140:           @open-edit="openEdit" 
+141:           @open-delete="openDelete" 
+142:         />
+143:       </div>
+144:     </main>
+145: 
+146:     <Transition name="hp-fade">
+147:       <div v-if="showProductDetailModal" class="hp-modal-overlay" @click="closeModals">
+148:         <div class="hp-modal hp-modal--lg" @click.stop>
+149:           <div class="hp-modal__header">
+150:             <button @click="closeModals" class="hp-modal__close">
+151:               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+152:             </button>
+153:             <h2 class="hp-modal__title">{{ detailModalType === 'banner' ? 'Banner' : 'Monitoring Produk AI' }}</h2>
+154:           </div>
+155:           <div class="hp-modal__body">
+156:             <img src="https://images.unsplash.com/photo-1604147706283-d7119b5b822c?auto=format&fit=crop&q=80&w=600&h=300" alt="Product Large" class="hp-product-img-large" />
+157:             <h3 class="hp-text-center" style="font-size: 22px; font-weight: 800; color: #19462D; margin: 20px 0;">Mie Sedap Goreng</h3>
+158:             <div class="hp-grid-3">
+159:               <div class="hp-form-group"><label>KODE PRODUK</label><div class="hp-input-mock">TX-076-01</div></div>
+160:               <div class="hp-form-group"><label>JENIS PRODUK</label><div class="hp-input-mock">Makanan</div></div>
+161:               <div class="hp-form-group"><label>STOK</label><div class="hp-input-mock">30 Pcs</div></div>
+162:             </div>
+163:             <div v-if="detailModalType !== 'banner'" class="hp-form-group" style="margin-top: 16px;">
+164:               <label>INFORMASI</label>
+165:               <div class="hp-input-mock hp-input-mock--large text-red">3 Hari Lagi Produk Ini Tidak Layak Makan</div>
+166:             </div>
+167:           </div>
+168:         </div>
+169:       </div>
+170:     </Transition>
+171: 
+172:     <Transition name="hp-fade">
+173:       <div v-if="showKaryawanModal" class="hp-modal-overlay" @click="closeModals">
+174:         <div class="hp-modal" @click.stop>
+175:           <div class="hp-modal__header">
+176:             <button @click="closeModals" class="hp-modal__close"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+177:             <h2 class="hp-modal__title">Akun Karyawan</h2>
+178:           </div>
+179:           <div class="hp-modal__body">
+180:             <div class="hp-modal-box">
+181:               <h4 class="hp-modal-box__title"><span class="hp-dot hp-dot--dark"></span> TAMBAH KARYAWAN BARU</h4>
+182:               <div class="hp-grid-2">
+183:                 <div class="hp-form-group"><label>USERNAME</label><input type="text" placeholder="Contoh : admin_koperasi" class="hp-input" /></div>
+184:                 <div class="hp-form-group"><label>NAMA LENGKAP</label><input type="text" placeholder="Contoh : ujang kedu.." class="hp-input" /></div>
+185:               </div>
+186:               <div class="hp-form-group" style="margin-top: 16px;"><label>KONTAK</label><input type="text" placeholder="Contoh : 08966...." class="hp-input" /></div>
+187:               <button @click="closeModals" class="hp-btn-simpan hp-mt-6">SIMPAN AKUN</button>
+188:             </div>
+189:           </div>
+190:         </div>
+191:       </div>
+192:     </Transition>
+193: 
+194:     <Transition name="hp-fade">
+195:       <div v-if="showPenggunaModal" class="hp-modal-overlay" @click="closeModals">
+196:         <div class="hp-modal" @click.stop>
+197:           <div class="hp-modal__header">
+198:             <button @click="closeModals" class="hp-modal__close"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+199:             <h2 class="hp-modal__title">Akun Pengguna</h2>
+200:           </div>
+201:           <div class="hp-modal__body">
+202:             <div class="hp-grid-3">
+203:               <div class="hp-form-group"><label>USERNAME</label><div class="hp-input-mock">Giska678</div></div>
+204:               <div class="hp-form-group"><label>EMAIL</label><div class="hp-input-mock">giska678@gmail.com</div></div>
+205:               <div class="hp-form-group"><label>KONTAK</label><div class="hp-input-mock">0895-7892-1234</div></div>
+206:             </div>
+207:             <div class="hp-form-group" style="margin-top: 16px;">
+208:               <label>STATUS</label>
+209:               <div><span class="hp-badge hp-badge--blue" style="font-size: 14px; padding: 10px 20px;">Online</span></div>
+210:             </div>
+211:           </div>
+212:         </div>
+213:       </div>
+214:     </Transition>
+215: 
+216:     <Transition name="hp-fade">
+217:       <div v-if="showSupplierModal" class="hp-modal-overlay" @click="closeModals">
+218:         <div class="hp-modal" @click.stop>
+219:           <div class="hp-modal__header">
+220:             <button @click="closeModals" class="hp-modal__close"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+221:             <h2 class="hp-modal__title">Akun Supplier</h2>
+222:           </div>
+223:           <div class="hp-modal__body">
+224:             <div class="hp-modal-box">
+225:               <h4 class="hp-modal-box__title"><span class="hp-dot hp-dot--dark"></span> TAMBAH SUPPLIER BARU</h4>
+226:               <div class="hp-grid-2">
+227:                 <div class="hp-form-group"><label>NAMA SUPPLIER</label><input type="text" placeholder="Contoh : admin_koperasi" class="hp-input" /></div>
+228:                 <div class="hp-form-group"><label>ALAMAT WILAYAH</label><input type="text" placeholder="Contoh : ujung kedu.." class="hp-input" /></div>
+229:                 <div class="hp-form-group"><label>KONTAK</label><input type="text" placeholder="Contoh : 08966...." class="hp-input" /></div>
+230:                 <div class="hp-form-group"><label>KOMODITAS</label><select class="hp-input"><option>Pilih Komoditas</option></select></div>
+231:               </div>
+232:               <button @click="closeModals" class="hp-btn-simpan hp-mt-6">SIMPAN AKUN</button>
+233:             </div>
+234:           </div>
+235:         </div>
+236:       </div>
+237:     </Transition>
+238: 
+239:     <Transition name="hp-fade">
+240:       <div v-if="showProdukModal" class="hp-modal-overlay" @click="closeModals">
+241:         <div class="hp-modal hp-modal--scrollable" @click.stop>
+242:           <div class="hp-modal__header sticky-header">
+243:             <button @click="closeModals" class="hp-modal__close"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+244:             <h2 class="hp-modal__title">Tambah Produk</h2>
+245:           </div>
+246:           <div class="hp-modal__body">
+247:             <div class="hp-modal-box">
+248:               <h4 class="hp-modal-box__title"><span class="hp-dot hp-dot--dark"></span> TAMBAH PRODUK BARU</h4>
+249:               <div class="hp-grid-2">
+250:                 <div class="hp-form-group"><label>NAMA PRODUK</label><input type="text" placeholder="Contoh : Mie Goreng" class="hp-input" /></div>
+251:                 <div class="hp-form-group"><label>HARGA JUAL</label><input type="text" placeholder="Contoh : Rp 23.000,00.." class="hp-input" /></div>
+252:                 <div class="hp-form-group"><label>HARGA BELI</label><input type="text" placeholder="Contoh : Rp 23.000,00.." class="hp-input" /></div>
+253:                 <div class="hp-form-group"><label>KATEGORI</label><select class="hp-input"><option>Pilih Komoditas</option></select></div>
+254:                 <div class="hp-form-group"><label>STOK</label><input type="text" placeholder="Contoh : 23 Pcs" class="hp-input" /></div>
+255:                 <div class="hp-form-group"><label>EXPIRED</label><select class="hp-input"><option>Tanggal</option></select></div>
+256:                 <div class="hp-form-group"><label>INPUT BERAT</label><input type="text" class="hp-input" /></div>
+257:                 <div class="hp-form-group"><label>SATUAN BERAT</label><select class="hp-input"><option>Pilih Satuan Berat</option></select></div>
+258:               </div>
+259:               <button class="hp-btn-outline hp-mt-6" style="width: 100%; justify-content: center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Masukan Gambar</button>
+260:               <button @click="closeModals" class="hp-btn-simpan hp-mt-6" style="max-width: 100%;">SIMPAN PRODUK</button>
+261:             </div>
+262:           </div>
+263:         </div>
+264:       </div>
+265:     </Transition>
+266: 
+267:     <Transition name="hp-fade">
+268:       <div v-if="showAktifitasModal" class="hp-modal-overlay" @click="closeModals">
+269:         <div class="hp-modal hp-modal--scrollable" style="max-width: 800px;" @click.stop>
+270:           <div class="hp-modal__header sticky-header">
+271:             <button @click="closeModals" class="hp-modal__close"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+272:             <h2 class="hp-modal__title">Detail Log Aktifitas</h2>
+273:           </div>
+274:           <div class="hp-modal__body">
+275:             <div class="hp-modal-box mb-4">
+276:               <h4 class="hp-modal-box__title"><span class="hp-dot hp-dot--dark"></span> INFORMASI UTAMA</h4>
+277:               <div class="hp-grid-3">
+278:                 <div class="hp-form-group"><label>JUDUL AKTIFITAS</label><div class="hp-input-mock">Penghapusan Tabel</div></div>
+279:                 <div class="hp-form-group"><label>TABEL TERDAMPAK</label><div class="hp-input-mock">Tabel_Produk</div></div>
+280:                 <div class="hp-form-group"><label>NAMA PENGGUNA</label><div class="hp-input-mock">Giska678</div></div>
+281:               </div>
+282:               <div class="hp-grid-3" style="margin-top: 16px;">
+283:                 <div class="hp-form-group" style="grid-column: span 2;"><label>DESKRIPSI LENGKAP</label><div class="hp-input-mock hp-input-mock--large">Tabel data produk TX-678-01 Telah di hapus</div></div>
+284:                 <div class="hp-form-group"><label>TIPE AKSI</label><div class="hp-badge-outline hp-badge-outline--orange">UPDATED</div></div>
+285:               </div>
+286:             </div>
+287:             <div class="hp-modal-box mb-4">
+288:               <h4 class="hp-modal-box__title"><span class="hp-dot hp-dot--dark"></span> JEJAK KREDENSIAL & LOKASI</h4>
+289:               <div class="hp-grid-3">
+290:                 <div class="hp-form-group"><label>IP ADDRESS</label><div class="hp-input-mock">Penghapusan Tabel</div></div>
+291:                 <div class="hp-form-group"><label>KORDINAT LOKASI (LAT)</label><div class="hp-input-mock">Tabel_Produk</div></div>
+292:                 <div class="hp-form-group"><label>KORDINAT LOKASI (LONG)</label><div class="hp-input-mock">Giska678</div></div>
+293:               </div>
+294:               <div class="hp-form-group" style="margin-top: 16px;"><label>USER AGENT (BROWSER/OS)</label><div class="hp-input-mock">CHROME,2342343, LINUX</div></div>
+295:             </div>
+296:             <div class="hp-modal-box mb-4">
+297:               <h4 class="hp-modal-box__title"><span class="hp-dot hp-dot--dark"></span> PERBANDINGAN DATA (JSON)</h4>
+298:               <div class="hp-json-tables">
+299:                 <table class="hp-json-table">
+300:                   <thead><tr><th colspan="2">Data Lama (Old)</th></tr><tr><th>Key</th><th>Value</th></tr></thead>
+301:                   <tbody><tr><td>status</td><td>Pending</td></tr><tr><td>updated_at</td><td>2026-05-23T03:31:45.000000Z</td></tr></tbody>
+302:                 </table>
+303:                 <table class="hp-json-table">
+304:                   <thead><tr><th colspan="2">Data Baru (New)</th></tr><tr><th>Key</th><th>Value</th></tr></thead>
+305:                   <tbody><tr><td>status</td><td>Diterima</td></tr><tr><td>updated_at</td><td>2026-05-23 06:12:33</td></tr></tbody>
+306:                 </table>
+307:               </div>
+308:             </div>
+309:             <div class="hp-modal-box">
+310:               <h4 class="hp-modal-box__title"><span class="hp-dot hp-dot--dark"></span> INTEGRITAS KEAMANAN</h4>
+311:               <div class="hp-form-group"><label>TRANSACTION HASH</label><div class="hp-input-mock" style="letter-spacing: 1px;">768789654I83YFHVB J6R5E</div></div>
+312:             </div>
+313:           </div>
+314:         </div>
+315:       </div>
+316:     </Transition>
+317: 
+318:     <Transition name="hp-fade">
+319:       <div v-if="showEditModal" class="hp-modal-overlay" @click="closeModals">
+320:         <div class="hp-modal hp-modal--sm" @click.stop>
+321:           <div class="hp-modal__header">
+322:             <button @click="closeModals" class="hp-modal__close"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+323:             <h2 class="hp-modal__title">Edit</h2>
+324:           </div>
+325:           <div class="hp-modal__body hp-text-center">
+326:             <h3 class="hp-modal__msg">Mengedit Informasi</h3>
+327:             <button @click="closeModals" class="hp-btn-simpan">SIMPAN</button>
+328:           </div>
+329:         </div>
+330:       </div>
+331:     </Transition>
+332: 
+333:     <Transition name="hp-fade">
+334:       <div v-if="showDeleteModal" class="hp-modal-overlay" @click="closeModals">
+335:         <div class="hp-modal hp-modal--sm" @click.stop>
+336:           <div class="hp-modal__header">
+337:             <button @click="closeModals" class="hp-modal__close"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+338:             <h2 class="hp-modal__title">Hapus</h2>
+339:           </div>
+340:           <div class="hp-modal__body hp-text-center">
+341:             <h3 class="hp-modal__msg">Menghapus Informasi ?</h3>
+342:             <div class="hp-btn-group">
+343:               <button @click="closeModals" class="hp-btn-action hp-btn-action--blue">YA</button>
+344:               <button @click="closeModals" class="hp-btn-action hp-btn-action--red">TIDAK</button>
+345:             </div>
+346:           </div>
+347:         </div>
+348:       </div>
+349:     </Transition>
+350:   </div>
+351: </template>
+352: 
+353: <script setup>
+354: // IMPORT CSS PUSAT DI SINI
+355: import '~/assets/css/admin-page.css'
+356: 
+357: import { ref, computed } from 'vue'
+358: 
+359: const mobileMenuOpen = ref(false)
+360: const isAkunOpen = ref(true)
+361: const currentView = ref('dashboard')
+362: 
+363: // ==== MODAL STATES ====
+364: const showProductDetailModal = ref(false)
+365: const detailModalType = ref('monitoring')
+366: const showKaryawanModal = ref(false)
+367: const showPenggunaModal = ref(false)
+368: const showSupplierModal = ref(false)
+369: const showProdukModal = ref(false)
+370: const showAktifitasModal = ref(false)
+371: 
+372: const showEditModal = ref(false)
+373: const showDeleteModal = ref(false)
+374: 
+375: function openEdit() { showEditModal.value = true }
+376: function openDelete() { showDeleteModal.value = true }
+377: function openProductDetail(type) {
+378:   detailModalType.value = type
+379:   showProductDetailModal.value = true
+380: }
+381: 
+382: function closeModals() {
+383:   showProductDetailModal.value = false
+384:   showKaryawanModal.value = false
+385:   showPenggunaModal.value = false
+386:   showSupplierModal.value = false
+387:   showProdukModal.value = false
+388:   showAktifitasModal.value = false
+389:   showEditModal.value = false
+390:   showDeleteModal.value = false
+391: }
+392: 
+393: // ==== NAV MENUS ====
+394: const menus = [
+395:   { id: 'dashboard', label: 'Dashboard', icon: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>' },
+396:   { 
+397:     id: 'akun', label: 'Akun', icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+398:     sub: [
+399:       { id: 'karyawan', label: 'Karyawan', icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' },
+400:       { id: 'pengguna', label: 'Pengguna', icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' }
+401:     ]
+402:   },
+403:   { id: 'supplier', label: 'Supplier', icon: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>' },
+404:   { id: 'produk', label: 'Produk', icon: '<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>' },
+405:   { id: 'kasir', label: 'Kasir', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>' },
+406:   { id: 'transaksi', label: 'Transaksi', icon: '<path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+407:   { id: 'kas', label: 'Kas', icon: '<circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/>' },
+408:   { id: 'aktifitas', label: 'Aktifitas', icon: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>' },
+409:   { id: 'custom-ecomerce', label: 'Custom Ecomerce', icon: '<path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>' }
+410: ]
+411: 
+412: const currentMenuLabel = computed(() => {
+413:   let label = 'Dashboard'
+414:   menus.forEach(m => {
+415:     if (m.id === currentView.value) label = m.label
+416:     if (m.sub) {
+417:       m.sub.forEach(s => { if (s.id === currentView.value) label = `Akun ${s.label}` })
+418:     }
+419:   })
+420:   return label
+421: })
+422: 
+423: function changeView(id) {
+424:   currentView.value = id
+425:   mobileMenuOpen.value = false
+426: }
+427: 
+428: // ==== DUMMY DATA TETAP DISINI SEMUA ====
+429: const chartData = [
+430:   { label: 'Jan', height: 50, displayValue: 'Rp 405k' }, { label: 'Feb', height: 60, displayValue: 'Rp 630k' }, { label: 'Mar', height: 68, displayValue: 'Rp 702k' }, { label: 'Apr', height: 75, displayValue: 'Rp 765k' },
+431:   { label: 'Mei', height: 58, displayValue: 'Rp 585k' }, { label: 'Jun', height: 68, displayValue: 'Rp 720k' }, { label: 'Jul', height: 62, displayValue: 'Rp 630k' }, { label: 'Agst', height: 70, displayValue: 'Rp 792k' },
+432:   { label: 'Sep', height: 62, displayValue: 'Rp 648k' }, { label: 'Oct', height: 50, displayValue: 'Rp 450k' }, { label: 'Nov', height: 70, displayValue: 'Rp 738k' }, { label: 'Des', height: 62, displayValue: 'Rp 675k' }
+433: ]
+434: 
+435: const monitoringData = [
+436:   { kode: 'TX-076-01', nama: 'Mie Sedap Goreng', jenis: 'Makanan', stok: '30 PCS', info: '3 Hari Lagi Expired', isRed: true },
+437:   { kode: 'DD-987-37', nama: 'Pasta Gigi Closeup', jenis: 'Cosmetic', stok: '5 PCS', info: 'Stok Menipis', isRed: true },
+438:   { kode: 'TY-055-45', nama: 'Selai Kacang', jenis: 'Makanan', stok: '7 PCS', info: '7 Hari Lagi Expired', isRed: true },
+439:   { kode: 'KI-547-12', nama: 'Tepung Segitiga', jenis: 'Makanan', stok: '3 PCS', info: 'Stok Menipis', isRed: true },
+440:   { kode: 'CV-346-66', nama: 'Mie Gaga', jenis: 'Makanan', stok: '4 PCS', info: 'Stok Menipis', isRed: true },
+441: ]
+442: 
+443: const karyawanData = [
+444:   { username: 'admin_konsumen', nama: 'Andi Wijaya Kusuma', kontak: '0895-2345-6789', status: 'Online' },
+445:   { username: 'admin_produsen', nama: 'Siti Aminah', kontak: '0895-2345-6789', status: 'Offline' },
+446:   { username: 'admin_jasa', nama: 'Yayan Ruhyan', kontak: '0895-2345-6789', status: 'Online' },
+447:   { username: 'karyawan_1', nama: 'Henriyanto', kontak: '0895-2345-6789', status: 'Online' },
+448:   { username: 'supplier_1', nama: 'Rudi Masud', kontak: '0895-2345-6789', status: 'Online' }
+449: ]
+450: 
+451: const penggunaData = [
+452:   { username: 'Giska678', email: 'giska678@gmail.com', kontak: '0895-2345-6789', status: 'Online' },
+453:   { username: 'Giska678', email: 'giska678@gmail.com', kontak: '0895-2345-6789', status: 'Online' },
+454:   { username: 'Giska678', email: 'giska678@gmail.com', kontak: '0895-2345-6789', status: 'Offline' },
+455:   { username: 'Giska678', email: 'giska678@gmail.com', kontak: '0895-2345-6789', status: 'Online' },
+456:   { username: 'Giska678', email: 'giska678@gmail.com', kontak: '0895-2345-6789', status: 'Online' },
+457: ]
+458: 
+459: const supplierData = [
+460:   { nama: 'Gudang Jaya', kontak: '0895-2345-6789', komoditas: 'Sembako', alamat: 'Samarinda Seberang' },
+461:   { nama: 'Gudang Jaya', kontak: '0895-2345-6789', komoditas: 'Sembako', alamat: 'Samarinda Seberang' },
+462:   { nama: 'Gudang Jaya', kontak: '0895-2345-6789', komoditas: 'Sembako', alamat: 'Samarinda Seberang' },
+463:   { nama: 'Gudang Jaya', kontak: '0895-2345-6789', komoditas: 'Sembako', alamat: 'Samarinda Seberang' },
+464:   { nama: 'Gudang Jaya', kontak: '0895-2345-6789', komoditas: 'Sembako', alamat: 'Samarinda Seberang' },
+465: ]
+466: 
+467: const transaksiData = [
+468:   { id: 'TX-334-55', tanggal: '12-03-2026', metode: 'Online Market', qty: '4 Pcs', total: 'Rp 24.000,00', jenis: 'E-Wallet' },
+469:   { id: 'TX-334-55', tanggal: '12-03-2026', metode: 'Online Market', qty: '4 Pcs', total: 'Rp 24.000,00', jenis: 'E-Wallet' },
+470:   { id: 'TX-334-55', tanggal: '12-03-2026', metode: 'Online Market', qty: '4 Pcs', total: 'Rp 24.000,00', jenis: 'E-Wallet' },
+471:   { id: 'TX-334-55', tanggal: '12-03-2026', metode: 'Online Market', qty: '4 Pcs', total: 'Rp 24.000,00', jenis: 'E-Wallet' },
+472:   { id: 'TX-334-55', tanggal: '12-03-2026', metode: 'Kasir Offline', qty: '4 Pcs', total: 'Rp 24.000,00', jenis: 'Cash' },
+473: ]
+474: 
+475: const kasData = [
+476:   { ket: 'Saldo modal awal Usaha', jenis: 'Masuk', nominal: 'Rp 700.000,00', waktu: '12-04-2026' },
+477:   { ket: 'Saldo modal awal Usaha', jenis: 'Masuk', nominal: 'Rp 700.000,00', waktu: '12-04-2026' },
+478:   { ket: 'Saldo modal awal Usaha', jenis: 'Masuk', nominal: 'Rp 700.000,00', waktu: '12-04-2026' },
+479:   { ket: 'Beli Keperluan', jenis: 'Keluar', nominal: 'Rp 50.000,00', waktu: '13-04-2026' },
+480: ]
+481: 
+482: const aktifitasData = [
+483:   { judul: 'Saldo modal awal Usaha', hash: '7866898DGHBRYUTYHJKN', tanggal: '12-04-2026', waktu: '09.00 AM' },
+484:   { judul: 'Saldo modal awal Usaha', hash: '7866898DGHBRYUTYHJKN', tanggal: '12-04-2026', waktu: '09.00 AM' },
+485:   { judul: 'Saldo modal awal Usaha', hash: '7866898DGHBRYUTYHJKN', tanggal: '12-04-2026', waktu: '09.00 AM' },
+486:   { judul: 'Saldo modal awal Usaha', hash: '7866898DGHBRYUTYHJKN', tanggal: '12-04-2026', waktu: '09.00 AM' },
+487:   { judul: 'Saldo modal awal Usaha', hash: '7866898DGHBRYUTYHJKN', tanggal: '12-04-2026', waktu: '09.00 AM' },
+488: ]
+489: </script> 
